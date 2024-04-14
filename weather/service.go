@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"os"
 )
@@ -27,7 +27,7 @@ func getWeatherForLatLng(lat string, lng string) (GetWeatherResponse, error) {
 	}
 
 	defer res.Body.Close()
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return GetWeatherResponse{}, err
 	}
@@ -42,13 +42,11 @@ func getWeatherForLatLng(lat string, lng string) (GetWeatherResponse, error) {
 
 func processWeatherResponse(obj GetOpenWeatherResponse) GetWeatherResponse {
 	returnObj := GetWeatherResponse{
-		Condition:   "",
+		Condition:   "Weather Status Not Available",
 		Temperature: "",
 	}
 
-	if len(obj.Weather) < 1 {
-		returnObj.Condition = "Weather Status Not Available"
-	} else {
+	if len(obj.Weather) >= 1 {
 		returnObj.Condition = obj.Weather[0].Description
 	}
 
